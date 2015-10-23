@@ -1,0 +1,14 @@
+{
+  "name": "docker-logstash",
+  "version": "0.1.0",
+  "author": "discodex",
+  "summary": "Configures docker-gen for tranporting docker logs to logstash",
+  "license": "GNU General Public License v2.0",
+  "source": "https://github.com/discodex/docker-logstash",
+  "project_page": "https://github.com/discodex/docker-logstash",
+  "issues_url": "https://github.com/discodex/docker-logstash/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+
