@@ -1,4 +1,4 @@
-# docker-docker-logstash
+# docker-logstash
 building puppet module for using docker-gen to transport container logs to docker-logstash
 
 #### Table of Contents
