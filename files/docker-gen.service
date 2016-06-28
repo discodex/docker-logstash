@@ -1,0 +1,12 @@
+[Unit]
+Description=docker-gen
+Documentation=https://github.com/jwilder/docker-gen/
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/opt/docker-gen/docker-gen -watch -notify "service logstash-forwarder-json restart" /etc/docker-gen/logstash-forwarder.tmpl /etc/logstash-forwarder-json
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

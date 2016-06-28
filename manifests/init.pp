@@ -1,41 +1,61 @@
-# == Class: logstash
+# == Class: docker-gen
 #
-# Full description of class logstash here.
+# Installs the docker-gen application and ensures it is running
 #
 # === Parameters
-#
-# Document parameters here.
-#
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
-#   e.g. "Specify one or more upstream ntp servers as an array."
-#
-# === Variables
-#
-# Here you should define a list of variables that this module would require.
-#
-# [*sample_variable*]
-#   Explanation of how this variable affects the funtion of this class and if
-#   it has a default. e.g. "The parameter enc_ntp_servers must be set by the
-#   External Node Classifier as a comma separated list of hostnames." (Note,
-#   global variables should be avoided in favor of class parameters as
-#   of Puppet 2.6.)
-#
-# === Examples
-#
-#  class { 'logstash':
-#    servers => [ 'pool.ntp.org', 'ntp.local.company.com' ],
-#  }
-#
-# === Authors
-#
-# Author Name <author@domain.com>
-#
-# === Copyright
-#
-# Copyright 2015 Your name here, unless otherwise noted.
-#
-class logstash {
-
-
+# 
+# 
+# 
+class docker-gen(
+    $docker_env		= undef,
+    $logstash_server	= undef
+){
+    case $::operatingsystemmajrelease {
+        '7':{
+                $base_dir = '/opt/docker-gen'
+                $template_dir = '/etc/docker-gen'
+                $unit_dir = '/usr/lib/systemd/system'
+	        $docker_gen_pkg = 'docker-gen'
+            }
+            default: { fail ( "This module does not support $::operatingsystemmajrelease family of Operating Systems") }
+	    }
+    file { "$base_dir":
+	ensure => directory,
+	mode   => 755,
+        owner  => 'root',
+        group  => 'root',
+	}
+    file { "$template_dir":
+        ensure => directory,
+        mode   => 755,
+        owner  => 'root',
+        group  => 'root',
+        }
+    file { "$base_dir/docker-gen":
+        ensure => present,
+        mode   => 755,
+        owner  => 'systuser',
+        group  => 'systuser',
+        source => "puppet:///modules/docker-gen/docker-gen",
+	}
+    file {"$template_dir/logstash-forwarder.tmpl":
+        ensure => present,
+        mode   => 0644,
+        owner  => 'root',
+        group  => 'root',
+        content => template("docker-gen/logstash-forwarder.erb"),
+	}
+    file {"$unit_dir/docker-gen.service":
+        ensure => present,
+        mode   => 0644,
+        owner  => 'root',
+        group  => 'root',
+        source => "puppet:///modules/docker-gen/docker-gen.service",
+    }
+    service {'docker-gen':
+	ensure    => running,
+	enable    => true,
+	subscribe => File["$template_dir/logstash-forwarder.tmpl"],
+    }
 }
+
